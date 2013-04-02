@@ -1,24 +1,23 @@
 require "spec_helper"
 
 describe "Push Daemon" do
-  let(:socket) { UDPSocket.new }
+  let(:push_daemon) { TestDaemon.new(6889) }
 
-  before(:all) do
-    Thread.new { PushDaemon.new.start }
+  before do
+    push_daemon.start
 
     eventually do
-      system("lsof -p #{$PID} | grep -q 6889").should be_true
+      push_daemon.should be_ready
     end
   end
 
   describe "commands" do
     describe "PING" do
       it "responds with PONG" do
-        socket.send("PING", 0, "127.0.0.1", 6889)
+        push_daemon.send("PING")
 
         eventually do
-          response, _ = socket.recvfrom(8)
-          response.should eq("PONG")
+          push_daemon.last_response.should eq("PONG")
         end
       end
     end
@@ -27,7 +26,7 @@ describe "Push Daemon" do
       it "delivers the message to the Google Cloud Messaging API" do
         stub_request :post, "https://android.googleapis.com/gcm/send"
 
-        socket.send('SEND t0k3n "Steve: What is up?"', 0, "127.0.0.1", 6889)
+        push_daemon.send('SEND t0k3n "Steve: What is up?"')
 
         eventually do
           assert_requested :post, "https://android.googleapis.com/gcm/send", {
