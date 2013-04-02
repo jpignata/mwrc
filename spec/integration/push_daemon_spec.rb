@@ -4,7 +4,7 @@ describe "Push Daemon" do
   let(:socket) { UDPSocket.new }
 
   before(:all) do
-    Thread.new { load "./pushd.rb" }
+    Thread.new { PushDaemon.new.start }
 
     eventually do
       system("lsof -p #{$PID} | grep -q 6889").should be_true

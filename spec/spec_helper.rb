@@ -11,4 +11,6 @@ Dir["./spec/support/*.rb"].each do |support_helper|
   require support_helper
 end
 
+require "push_daemon"
+
 Thread.abort_on_exception = true
