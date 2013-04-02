@@ -1,10 +1,15 @@
 class UDPServer
-  def initialize(socket = UDPSocket.new)
-    @socket = socket
+  Data = Struct.new(:message, :sockaddr)
+
+  def initialize(app)
+    @app = app
+    @socket = UDPSocket.new
   end
 
-  def bind(port)
+  def listen(port)
     @socket.bind("0.0.0.0", port)
+
+    loop { @app.call(receive) }
   end
 
   def receive

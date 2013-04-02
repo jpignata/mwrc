@@ -1,27 +1,44 @@
 require "spec_helper"
 
 describe UDPServer do
-  let(:socket) { stub }
-  let(:server) { UDPServer.new(socket) }
+  let(:app) { stub }
+  let(:server) { UDPServer.new(app) }
+  let(:socket) { UDPSocket.new }
 
-  describe "#bind" do
-    it "binds the socket to the given port" do
-      socket.should_receive(:bind).with("0.0.0.0", 15015)
-      server.bind(15015)
+  describe "#listen" do
+    it "binds to the given port" do
+      Thread.new { server.listen(48777) }
+
+      eventually do
+        system("lsof -p #{$PID} | grep -q 48777").should be_true
+      end
     end
-  end
 
-  describe "#receive" do
-    it "returns the last received datagram from the socket" do
-      socket.should_receive(:recvfrom).with(4096)
-      server.receive
+    it "calls the app with incoming requests" do
+      app.should_receive(:call) { |data|
+        data.first.should eq("Testing")
+      }
+
+      thread = Thread.new { server.listen(48778) }
+
+      eventually do
+        system("lsof -p #{$PID} | grep -q 48778").should be_true
+      end
+
+      socket.send("Testing", 0, "127.0.0.1", 48778)
+      thread.join(0.05)
     end
   end
 
   describe "#send" do
-    it "sends the given message to the given address and port" do
-      socket.should_receive(:send).with("Testing", 0, "127.0.0.1", 8080)
-      server.send("Testing", "127.0.0.1", 8080)
+    it "sends a message to a host and port with the specified flags" do
+      socket.bind("0.0.0.0", 48790)
+      server.send("Testing", "127.0.0.1", 48790)
+
+      eventually do
+        message, _ = socket.recvfrom_nonblock(16)
+        message.should eq("Testing")
+      end
     end
   end
 end
