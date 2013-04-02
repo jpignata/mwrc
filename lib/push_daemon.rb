@@ -6,33 +6,21 @@ require "thread"
 require "httpclient"
 require "socket"
 
+require "worker"
+
 class PushDaemon
   def initialize
-    @queue = Queue.new
-    @client = HTTPClient.new
+    @worker = Worker.new
     @socket = UDPSocket.new
   end
 
   def start
-    spawn_workers
+    @worker.spawn(10)
     bind
     loop { process_request }
   end
 
   private
-
-  def spawn_workers
-    10.times do
-      Thread.new do
-        while data = @queue.pop
-          @client.post("https://android.googleapis.com/gcm/send", data, {
-            "Authorization" => "key=AIzaSyCABSTd47XeIH",
-            "Content-Type" => "application/json"
-          })
-        end
-      end
-    end
-  end
 
   def bind
     @socket.bind("0.0.0.0", 6889)
@@ -49,7 +37,7 @@ class PushDaemon
         "registration_ids" => [$1],
         "data" => { "alert" => $2 }
       })
-      @queue << json
+      @worker << json
     end
   end
 end
