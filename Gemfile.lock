@@ -1,0 +1,10 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    httpclient (2.3.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  httpclient
