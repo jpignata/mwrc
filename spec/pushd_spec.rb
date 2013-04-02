@@ -4,17 +4,19 @@ describe "Push Daemon" do
   let(:socket) { UDPSocket.new }
 
   before(:all) do
-    thread = Thread.new { load "./pushd.rb" }
-    thread.join(0.05)
+    Thread.new { load "./pushd.rb" }
+
+    eventually do
+      system("lsof -p #{$PID} | grep -q 6889").should be_true
+    end
   end
 
   describe "commands" do
     describe "PING" do
       it "responds with PONG" do
         socket.send("PING", 0, "127.0.0.1", 6889)
-        sleep 0.5
 
-        Timeout.timeout(1) do
+        eventually do
           response, _ = socket.recvfrom(8)
           response.should eq("PONG")
         end
@@ -26,20 +28,21 @@ describe "Push Daemon" do
         stub_request :post, "https://android.googleapis.com/gcm/send"
 
         socket.send('SEND t0k3n "Steve: What is up?"', 0, "127.0.0.1", 6889)
-        sleep 0.5
 
-        assert_requested :post, "https://android.googleapis.com/gcm/send", {
-          headers: {
-            "Authorization" => "key=AIzaSyCABSTd47XeIH",
-            "Content-Type"  => "application/json"
-          },
-          body: {
-            "registration_ids" => ["t0k3n"],
-            "data" => {
-              "alert" => "Steve: What is up?"
-            }
-          }.to_json
-        }
+        eventually do
+          assert_requested :post, "https://android.googleapis.com/gcm/send", {
+            headers: {
+              "Authorization" => "key=AIzaSyCABSTd47XeIH",
+              "Content-Type"  => "application/json"
+            },
+            body: {
+              "registration_ids" => ["t0k3n"],
+              "data" => {
+                "alert" => "Steve: What is up?"
+              }
+            }.to_json
+          }
+        end
       end
     end
   end
