@@ -12,6 +12,7 @@ require "udp_server"
 require "jobs/ping"
 require "jobs/send"
 require "jobs"
+require "push_notification"
 
 class PushDaemon
   def initialize

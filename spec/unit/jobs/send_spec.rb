@@ -5,18 +5,15 @@ describe Jobs::Send do
   let(:client) { Client.new(["AF_INET", 80, "127.0.0.1", "127.0.0.1"], stub) }
   let(:job) { Jobs::Send.new(client, message) }
 
-  it "posts the JSON representation of the message to the Google Cloud Messaging API" do
-    stub_request :post, "https://android.googleapis.com/gcm/send"
+  it "extracts message parameters and creates a push notification" do
+    push_notification = stub
+    push_notification.should_receive(:deliver)
+
+    PushNotification.
+      should_receive(:new).
+      with("abc123", "Hello world").
+      and_return(push_notification)
 
     job.run
-
-    assert_requested :post, "https://android.googleapis.com/gcm/send", {
-      "body" => {
-        "registration_ids" => ["abc123"],
-        "data" => {
-          "alert" => "Hello world"
-        }
-      }.to_json
-    }
   end
 end
