@@ -1,9 +1,9 @@
 require "spec_helper"
 
 describe Jobs::Send do
-  let(:message) { 'SEND abc123 "Hello world"' }
   let(:client) { Client.new(["AF_INET", 80, "127.0.0.1", "127.0.0.1"], stub) }
-  let(:job) { Jobs::Send.new(client, message) }
+  let(:request) { Request.new('SEND abc123 "Hello world"') }
+  let(:job) { Jobs::Send.new(client, request) }
 
   it "extracts message parameters and creates a push notification" do
     push_notification = stub

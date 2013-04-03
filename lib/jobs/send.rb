@@ -1,13 +1,22 @@
 module Jobs
   class Send
-    def initialize(client, message)
+    def initialize(client, request)
       @client = client
-      @message = message
+      @request = request 
     end
 
     def run
-      @message[5..-1].match(/([a-zA-Z0-9_\-]*) "([^"]*)/)
-      PushNotification.new($1, $2).deliver
+      PushNotification.new(registration_id, alert).deliver
+    end
+
+    private
+
+    def registration_id
+      @request.parameters[0]
+    end
+
+    def alert
+      @request.parameters[1]
     end
   end
 end
