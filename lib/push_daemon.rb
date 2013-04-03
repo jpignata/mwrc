@@ -10,6 +10,7 @@ require "worker"
 require "udp_server"
 require "jobs/ping"
 require "jobs/send"
+require "jobs"
 
 class PushDaemon
   def initialize
@@ -23,12 +24,7 @@ class PushDaemon
   end
 
   def call(data)
-    job = case data[0].split.first
-    when "PING"
-      Jobs::Ping.new(data, @server)
-    when "SEND"
-      Jobs::Send.new(data, @server)
-    end
+    job = Jobs.factory(data, @server)
 
     if job
       @worker << job
