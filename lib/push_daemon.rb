@@ -13,6 +13,7 @@ require "request"
 require "udp_server"
 require "jobs/ping"
 require "jobs/send"
+require "jobs/null_job"
 require "jobs"
 require "push_notification"
 
@@ -31,8 +32,6 @@ class PushDaemon
     request = Request.new(message)
     job = Jobs.factory(client, request)
 
-    if job
-      @worker << job
-    end
+    @worker << job
   end
 end

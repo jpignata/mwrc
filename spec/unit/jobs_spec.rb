@@ -18,9 +18,9 @@ describe Jobs do
   end
 
   context "any other command" do
-    it "returns nil" do
+    it "returns NullJob" do
       request = Request.new("SHUTDOWN")
-      Jobs.factory(stub, request).should be_nil
+      Jobs.factory(stub, request).should be_an_instance_of(Jobs::NullJob)
     end
   end
 end

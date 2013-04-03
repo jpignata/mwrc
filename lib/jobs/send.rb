@@ -2,7 +2,7 @@ module Jobs
   class Send
     def initialize(client, request)
       @client = client
-      @request = request 
+      @request = request
     end
 
     def run
