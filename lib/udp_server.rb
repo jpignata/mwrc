@@ -11,7 +11,7 @@ class UDPServer
 
     loop do
       message, sockaddr = @socket.recvfrom(4096)
-      client = Client.new(sockaddr)
+      client = Client.new(sockaddr, self)
 
       @app.call(client, message)
     end

@@ -4,10 +4,9 @@ module Jobs
       @client ||= HTTPClient.new
     end
 
-    def initialize(client, message, server)
+    def initialize(client, message)
       @client = client
       @message = message
-      @server = server
     end
 
     def run

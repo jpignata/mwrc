@@ -1,6 +1,11 @@
 class Client
-  def initialize(sockaddr)
+  def initialize(sockaddr, server)
     @addrinfo = Addrinfo.new(sockaddr)
+    @server = server
+  end
+
+  def send(message)
+    @server.send(message, address, port)
   end
 
   def address

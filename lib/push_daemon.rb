@@ -25,7 +25,7 @@ class PushDaemon
   end
 
   def call(client, message)
-    job = Jobs.factory(client, message, @server)
+    job = Jobs.factory(client, message)
 
     if job
       @worker << job

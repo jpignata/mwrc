@@ -2,7 +2,15 @@ require "spec_helper"
 
 describe Client do
   let(:sockaddr) { ["AF_INET", 80, "www.example.com", "192.0.43.10"] }
-  let(:client) { Client.new(sockaddr) }
+  let(:server) { stub }
+  let(:client) { Client.new(sockaddr, server) }
+
+  describe "#send" do
+    it "sends a message to the client via the server" do
+      server.should_receive(:send).with("Hello world", "192.0.43.10", 80)
+      client.send("Hello world")
+    end
+  end
 
   describe "#address" do
     it "returns the IP address of the client" do

@@ -4,12 +4,12 @@ module Jobs
     "SEND" => Send
   }
 
-  def self.factory(client, message, server)
+  def self.factory(client, message)
     command = message.split.first.upcase
     klass = JOBS[command]
 
     if klass
-      klass.new(client, message, server)
+      klass.new(client, message)
     end
   end
 end
