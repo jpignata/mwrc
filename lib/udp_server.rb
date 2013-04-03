@@ -9,11 +9,12 @@ class UDPServer
   def listen(port)
     @socket.bind("0.0.0.0", port)
 
-    loop { @app.call(receive) }
-  end
+    loop do
+      message, sockaddr = @socket.recvfrom(4096)
+      client = Client.new(sockaddr)
 
-  def receive
-    @socket.recvfrom(4096)
+      @app.call(client, message)
+    end
   end
 
   def send(message, address, port)

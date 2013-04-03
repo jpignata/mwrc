@@ -7,6 +7,7 @@ require "httpclient"
 require "socket"
 
 require "worker"
+require "client"
 require "udp_server"
 require "jobs/ping"
 require "jobs/send"
@@ -23,8 +24,8 @@ class PushDaemon
     @server.listen(6889)
   end
 
-  def call(data)
-    job = Jobs.factory(data, @server)
+  def call(client, message)
+    job = Jobs.factory(client, message, @server)
 
     if job
       @worker << job

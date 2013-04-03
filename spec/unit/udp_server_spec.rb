@@ -15,15 +15,13 @@ describe UDPServer do
     end
 
     it "calls the app with incoming requests" do
-      app.should_receive(:call) { |data|
-        data.first.should eq("Testing")
+      app.should_receive(:call) { |client, message|
+        message.should eq("Testing")
       }
 
       thread = Thread.new { server.listen(48778) }
 
-      eventually do
-        system("lsof -p #{$PID} | grep -q 48778").should be_true
-      end
+      system("lsof -p #{$PID} | grep -q 48778").should be_true
 
       socket.send("Testing", 0, "127.0.0.1", 48778)
       thread.join(0.05)
