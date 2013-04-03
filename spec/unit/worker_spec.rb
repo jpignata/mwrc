@@ -4,18 +4,16 @@ describe Worker do
   let(:queue) { Queue.new }
   let(:worker) { Worker.new(queue) }
 
-  it "posts submitted items to the Google Cloud Messaging API" do
-    stub_request :post, "https://android.googleapis.com/gcm/send"
-
-    json = '{"post":"body"}'
-
-    worker << json
+  it "runs submitted jobs" do
     worker.spawn(1)
 
+    job = stub
+    job.should_receive(:run)
+
+    worker << job
+
     eventually do
-      assert_requested :post, "https://android.googleapis.com/gcm/send", {
-        "body" => json
-      }
+      worker.queue_size.should eq(0)
     end
   end
 

@@ -23,12 +23,15 @@ class PushDaemon
   end
 
   def call(data)
-    case data[0].split.first
+    job = case data[0].split.first
     when "PING"
-      Jobs::Ping.new(data, @server).run
+      Jobs::Ping.new(data, @server)
     when "SEND"
-      json = Jobs::Send.new(data, @server).run
-      @worker << json
+      Jobs::Send.new(data, @server)
+    end
+
+    if job
+      @worker << job
     end
   end
 end
