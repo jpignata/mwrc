@@ -9,4 +9,13 @@ describe Jobs::Ping do
     client.should_receive(:send).with("PONG")
     job.run
   end
+
+  describe "#>>" do
+    it "enqueues itself in the worker" do
+      worker = stub
+      worker.should_receive(:<<).with(job)
+
+      job >> worker
+    end
+  end
 end

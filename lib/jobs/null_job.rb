@@ -5,5 +5,8 @@ module Jobs
 
     def run
     end
+
+    def >>(worker)
+    end
   end
 end

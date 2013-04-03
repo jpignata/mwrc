@@ -9,6 +9,10 @@ module Jobs
       PushNotification.new(registration_id, alert).deliver
     end
 
+    def >>(worker)
+      worker << self
+    end
+
     private
 
     def registration_id
