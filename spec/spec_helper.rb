@@ -1,4 +1,4 @@
-require "english"
+require "English"
 require "socket"
 require "timeout"
 require "rspec"
