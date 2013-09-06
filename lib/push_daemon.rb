@@ -19,9 +19,10 @@ require "jobs"
 require "push_notification"
 
 class PushDaemon
-  def initialize
-    @worker = Worker.new
-    @server = UDPServer.new(self)
+  def initialize(params = {})
+    params = defaults.merge(params)
+    @worker = params[:worker]
+    @server = params[:server_class].new(self)
   end
 
   def start
@@ -34,5 +35,14 @@ class PushDaemon
     job = Jobs.factory(client, request)
 
     job >> @worker
+  end
+
+  private
+
+  def defaults
+    {
+      worker: Worker.new,
+      server_class: UDPServer
+    }
   end
 end
