@@ -10,8 +10,8 @@ class Worker
     end
   end
 
-  def <<(json)
-    @queue << json
+  def <<(job)
+    @queue << job
   end
 
   def pool_size
